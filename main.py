@@ -5,7 +5,7 @@ from Zaber import ZB_Com, ZB, ZB_waitall
 from SmarAct import SA_Com, SA
 import EPICS #Cyclical referencing, hence 'from xxx import yyy' does not work
 from Compensator import Trig
-
+#Test GITHUT DESKTOP!!!!
 ## Home all devices, This function assumes that the program closes properly
 ## If Due to whatever reason, the program did not end properly
 ## One should be extra careful and home the device manually
