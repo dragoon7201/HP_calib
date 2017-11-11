@@ -1,0 +1,110 @@
+## Introduction ##
+	This program is aimed to automate the Hall Probe Calibration process
+	It is composed of the following Python Modules written in Python3.5:
+
+	main.py
+	EPICS.py
+	NMR.py
+	SmarAct.py
+	Zaber.py
+	User_inputs.py
+	Compensator.py
+	After_Crash_Manual_Recovery.py
+	NMR_raw.py
+
+	"After_Crash_Manual_Recovery.py" is a special module, it is designed for use after an unexpected crash of the program,
+	an unexpected crash of the program may be caused by loose cable connections, or a unexpected power off. The result 
+	may leave device arms in a unsafe position at risk of collision or twisting cables if one were to run "main.py" again. 
+	Hence one should drive the devices back to a safe position before re-starting main.py
+	Recovery can be done in two ways:
+	One, by turning the control knobs on Zaber devices themselves, ___Picture___
+	Two, run "After_Crash_Manual_Recovery.py" and follow the instructions within.
+
+	Here is a picture of what a safe position looks like ___Picture___
+	* If the SmarAct device looks to be past 7 O'clock position, it may be a good idea to just turn it CCW a bit. As it is programmed 
+	  to search for home in the CW direction. If it ends up beyond its home position CW, it will rotate a full circle to home
+	  and that may damage its cable in the long run.
+
+	To start the program normally. Do the following:
+	Connect all necessary cables (Zaber, SmarAct, NMR Teslameter, Ethernet) to your computer ___Picture___
+	Turn on the chiller located on top of rm.1504 __Picture__ 
+	Flip the Power Supply switch to ON __Picture__
+	Double check HP cables are connected correctly __Picture__
+	Double check user inputs in User_inputs.txt are correct
+	Run "main.py"
+
+## Common Troubleshoot ##
+
+	Symptom: Computer records "No Lock" for NMR readings and NMR Teslameter does not configure into remote mode properly
+	Cause: NMR Teslameter faulty connection
+	Fix: Make sure connection is firm especially on the NMR Teslameter end. Power Teslameter Off/On and run "NMR_raw.py"
+	     Repeat until signal from Teslameter is seen on program console.
+
+## Module Details ##
+
+	# main.py #
+	This module provides the overall structure of the program. It starts by asking the user to confirm certain parameters, 
+	then it connects all devices, and finally it begins calibration movements and records the measurements. It calls functions
+	that monitor temperature, configure power supply and other miscellaneous stuff.
+	At the end of calibration, it moves devices to the safe position, and powers down the PS.
+	==========================================================================================================================
+
+	# EPICS.py #
+	This module contains functions related to reading PV values, and writting PV values. Method of operation uses the *PyEpics* module
+	for reading PV's and the *Paramiko* module for writing. (Both are downloaded) The reading part requires a connection to 
+	the Ethernet port in the lab. PV writing is handled through a SSH client established by Paramiko to the Linux machine. This is because
+	PV's are read-only from the 45.x network and that is the one we connect to. Additional premission is needed to connect to the 51. network
+	which would allow us to write to PV's directly. Talk to Networking if you wish to do that. As of now, Paramiko seems to work fine. 
+	==========================================================================================================================
+
+	# NMR.py #
+	This module contains functions related to communication with the NMR Teslameter. Method of operation is writing an encoded
+	string command to the appropriate serial connection. This uses the *PySerial* module, which is downloaded. Commands for the NMR
+	can be found in the NMR Teslameter Manual under RS232 C Interface chapter. The Manual can be found here:
+	http://vsrv-wiki-01/mediawiki/images/7/71/ML_PT_2025_User_Manual.pdf
+	==========================================================================================================================
+
+	# SmarAct.py #
+	This module contains functions related to communication with the SmarAct nano rotary device. Method of operation is sending an encoded
+	string command through a TCP socket connection. This uses the *Socket* module, which comes with Python. Commands can be found here:
+	T:\Groups\Accelerator_Operations_and_Devel\MagMap\Software\SmarAct\Documentation\MCS ASCII Programming Interface
+	Command string format is generally:
+	":cmd_,x,y,z\n"
+	Where cmd is the command, _ is usually the channel number, x is command amount, y and z are additional options.
+	==========================================================================================================================
+
+	# Zaber.py #
+	This module contains function related to communication with Zaber devices. Method of operation is sending an encoded string command
+	through a serial connection. This uses the *PySerial* module which can be downloaded. Commands can be found here:
+	http://www.zaber.com/wiki/Manuals/ASCII_Protocol_Manual
+	Command string format is generally:
+	"/x y cmd z\n" 
+	Where x is the device number, y is the axis number (0 or 1 as we do not have multiaxle devices)
+	cmd is the command, and z is the command amount, which is may be empty depending on command.
+	==========================================================================================================================
+	
+	# User_inputs #
+	This module contains input parameters from user_inputs.txt along with some other constants or variables that are used by 
+	other modules. One can alter this module if one feels certain parameters should be adjusted, such as what temperatures to power
+	down the power supply for cooling
+	==========================================================================================================================
+
+	# Compensator #
+	This module contains one function called Trig(), it simply calculates the amount of movement needed in the x,y,z axis to
+	compensate for offsets of rotation. We want the hall probe to end up at the same position after any rotation. That is what 
+	this function seeks to accomplish. It may not be perfect however, as the dimensions used in calculation are roughly obtained
+	and may be off by several mm. Improvements in this aspect can be made, however, I do not see it having significant impact,
+	as the field is fairly stable within small distances. 
+	should be very stable such small distances.  
+	==========================================================================================================================
+
+	# After_Crash_Manual_Recovery.py #
+	This module contains functions that help the user drive devices back to a safe position. One can choose Zaber, or SmarAct mode.
+	SmarAct mode will simply rotate the device CCW 30 degrees, this will ensure it ends up before the home mark, thus not needing to
+	travel a full circle to find home. In Zaber mode, user can drive each device until it ends up in the safe position. 
+	Additional module used is the *PynPut* module, which is downloaded.
+	==========================================================================================================================
+
+	# NMR_raw.py #
+	This module is used only for checking connections between computer and NMR Teslameter. It writes the enqiry command, and prints
+	recieved information if any comes through. Otherwise it prints "check connection and try again" to console. 

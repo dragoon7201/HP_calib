@@ -1,0 +1,28 @@
+=@@= Zaber Communication Port =@@= ( ZB )
+COM6
+=@@= NMR Teslameter Communication Port =@@= ( NMR )
+COM5
+=@@= SmarAct NetWork IP Address =@@= ( SA )
+192.168.1.200
+=@@= SmarAct NetWork IP Port =@@= ( SA )
+5000
+=@@= SmarAct Device Channel =@@= ( 0, 1, 2 )
+2
+=@@= X Center Position in mm =@@= ( ZB device 1 )
+75
+=@@= Y Center Position in mm =@@= ( ZB device 3 )
+34
+=@@= Z Center Position in mm =@@= ( ZB device 2 )
+15
+=@@= NMR Teslameter Probe 2 in degrees =@@= ( ZB device 5 )
+295
+=@@= NMR Teslameter Probe 4 in degrees =@@= ( ZB device 5 )
+175
+=@@= NMR Teslameter Probe 5 in degrees =@@= ( ZB device 5 )
+55
+=@@= Zaber Zero Angle for X, Y, Z probe in degrees =@@= ( ZB device 4 ) (such that HP chip surface faces directly up )
+-2.4, -90.8, -1.8
+=@@= SmarAct Zero Angle for X, Y, Z probe in degrees =@@= ( SA device ) (such that HP x probe is parallel with dipole surfaces )
+48, 47, -42.6
+=@@= PowerSupply to NMR DAC Pairing File =@@=
+Gap_55mm.txt

@@ -1,0 +1,74 @@
+import os
+CUR_DIR = os.path.dirname(__file__)
+user_file = CUR_DIR + "\\user_inputs.txt"
+
+#Reading the user_input.txt
+with open(user_file, 'r') as source:
+    input_line = [x.strip('\n') for x in source.readlines()]
+#Assigning them to constants used by other modules
+ZB_PORT = input_line[1]
+NMR_PORT = input_line[3]
+SA_IP = input_line[5]
+SA_PORT = int(input_line[7])
+SA_CH = input_line[9]
+X_CTR = float(input_line[11])
+Y_CTR = float(input_line[13])
+Z_CTR = float(input_line[15])
+NMR_P2 = float(input_line[17])
+NMR_P4 = float(input_line[19])
+NMR_P5 = float(input_line[21])
+ZB_ZERO = [float(x) for x in input_line[23].split(',')]
+SA_ZERO = [float(x) for x in input_line[25].split(',')]
+PS_SEQ = [int(x) for x in input_line[27].split(',')]
+PS_POLAR = input_line[29]
+HP_PROB = input_line[31].upper().replace(' ', '').split(',')
+HP_DATA = input_line[33]
+ZB_ANGLES = [int(x) for x in input_line[35].split(',')]
+SA_ANGLES = [int(x) for x in input_line[37].split(',')]
+PS_Wait_Time = int(input_line[39])
+PS_HOT = { ## The HOT threshold varies for different PS dac settings,
+            # as higher dac heats up faster
+    18000: 31,
+    30000: 30,
+    45000: 29,
+    60000: 29,
+    70000: 29,
+    80000: 29,
+    100000: 28.5,
+    110000: 28.5,
+    120000: 28,
+    130000: 28,
+    140000: 28,
+    150000: 27.5,
+    160000: 27.5,
+    170000: 27.5,
+    180000: 27.5,
+    200000: 27,
+    220000: 27,
+    240000: 27
+}
+PS_COOL = 27
+PS_NMR = {  ## Contains the conversions from power supply dac to NMR dac so that the NMR can lock on (set for 40 mm gap)
+    18000: 750,
+    30000: 2225,
+    45000: 3850,
+    60000: 175,
+    80000: 1025,
+    100000: 1675,
+    110000: 1950,
+    120000: 2225,
+    130000: 2500,
+    140000: 2725,
+    150000: 2975,
+    160000: 3250,
+    170000: 3500,
+    180000: 1350,
+    200000: 1650,
+    220000: 1900,
+    240000: 2175
+}
+#Global variables used by other modules for keeping track of things
+HP_STRT = 0
+HP_FLAT = 0
+REQUEST = False
+IS_ON = False
