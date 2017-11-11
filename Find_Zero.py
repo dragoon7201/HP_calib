@@ -123,7 +123,7 @@ def Zeroing():
                     else:
                         EPICS.Rec_HP(run_mode='zeroing', probe=HP)
                 if plot: # This part is to reset the plot after finishing the scans for one device.
-                    RT_plotter.fig_name = D + '_' + HP + '_pos' if polarity > 0 else "_neg" + '.png' #Sets the filename for saving
+                    RT_plotter.fig_name = D + '_' + HP + '_pos' if pol > 0 else "_neg" + '.png' #Sets the filename for saving
                     RT_plotter.SAVE = True  #Turns the saving path to true, the actual saving is done in RT_plotter.py module, save directory is HP_Data
                     time.sleep(2)
                     RT_plotter.x_dat = [] #Clears previous data

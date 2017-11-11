@@ -5,14 +5,9 @@ import random
 import time
 #import EPICS
 
-while True:
-    reply = input("Select the hall probes to zero, any combination of X, Y, and Z separated by commas\n").upper()
-    Probes = reply.replace(' ', '').split(',')
-    if set(Probes).issubset(['X', 'Y', 'Z']):
-        break
-    else:
-        print("Input not understood, please please try again")
-
+pol = 1
+fig_name = 'string' + '_pos' if pol > 0 else "_neg" + '.png'  # Sets the filename for saving
+print(fig_name)
 
 
 # x, y, z = EPICS.Rec_HP(run_mode='zeroing', probe='X', option='return_ave')[:3]

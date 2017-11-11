@@ -1,7 +1,8 @@
 from epics import PV
 import matplotlib.pyplot as plt
 import time
-
+TM_02 = PV("TM1504-1-02")
+TM_06 = PV("TM1504-1-06")
 dat1 = []
 dat2 = []
 x_axis = []
