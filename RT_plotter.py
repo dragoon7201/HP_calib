@@ -11,6 +11,19 @@ z_dat = []
 x_axis = []
 
 
+def axis_limit(array, arg):
+    if arg == 'min':
+        if len(array) == 1:
+            return array[0] - 0.1
+        else:
+            return min(array)
+    if arg == 'max':
+        if len(array) == 1:
+            return array[0] + 0.1
+        else:
+            return max(array)
+
+
 def plot():
     global new_data, SAVE
     fig = plt.figure()
@@ -47,13 +60,16 @@ def plot():
             Ln_y.set_xdata(x_axis)
             Ln_z.set_xdata(x_axis)
 
-            x_plot.set_xlim(min(x_axis) - 0.01, max(x_axis) + 0.01) #Off sets are just to prevent error of left and right boundary being equal
-            y_plot.set_xlim(min(x_axis) - 0.01, max(x_axis) + 0.01)
-            z_plot.set_xlim(min(x_axis) - 0.01, max(x_axis) + 0.01)
+            mn = axis_limit(x_axis, 'min')
+            mx = axis_limit(x_axis, 'max')
 
-            x_plot.set_ylim(min(x_dat) - 0.01*abs(min(x_dat)), max(x_dat) + 0.01*abs(max(x_dat))) #Off sets are just to prevent error of top and bottom boundary being equal
-            y_plot.set_ylim(min(y_dat) - 0.01*abs(min(y_dat)), max(y_dat) + 0.01*abs(max(y_dat)))
-            z_plot.set_ylim(min(z_dat) - 0.01*abs(min(z_dat)), max(z_dat) + 0.01*abs(max(z_dat)))
+            x_plot.set_xlim(mn, mx)
+            y_plot.set_xlim(mn, mx)
+            z_plot.set_xlim(mn, mx)
+
+            x_plot.set_ylim(axis_limit(x_dat, 'min'), axis_limit(x_dat, 'max'))
+            y_plot.set_ylim(axis_limit(y_dat, 'min'), axis_limit(y_dat, 'max'))
+            z_plot.set_ylim(axis_limit(z_dat, 'min'), axis_limit(z_dat, 'max'))
             new_data = False
         elif SAVE:
             print('saving triggered')
