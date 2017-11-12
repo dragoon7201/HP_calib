@@ -21,7 +21,7 @@ COM5
 =@@= NMR Teslameter Probe 5 in degrees =@@= ( ZB device 5 )
 55
 =@@= Zaber Zero Angle for X, Y, Z probe in degrees =@@= ( ZB device 4 ) (such that HP chip surface faces directly up )
--2.4, -90.8, -1.8
+0.5, -90.8, -1.8
 =@@= SmarAct Zero Angle for X, Y, Z probe in degrees =@@= ( SA device ) (such that HP x probe is parallel with dipole surfaces )
 47.8, 47, -42.6
 =@@= PowerSupply to NMR DAC Pairing File =@@=
