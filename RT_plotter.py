@@ -47,13 +47,13 @@ def plot():
             Ln_y.set_xdata(x_axis)
             Ln_z.set_xdata(x_axis)
 
-            x_plot.set_xlim(min(x_axis) - 0.1, max(x_axis) + 0.1)
-            y_plot.set_xlim(min(x_axis) - 0.1, max(x_axis) + 0.1)
-            z_plot.set_xlim(min(x_axis) - 0.1, max(x_axis) + 0.1)
+            x_plot.set_xlim(min(x_axis) - 0.01, max(x_axis) + 0.01) #Off sets are just to prevent error of left and right boundary being equal
+            y_plot.set_xlim(min(x_axis) - 0.01, max(x_axis) + 0.01)
+            z_plot.set_xlim(min(x_axis) - 0.01, max(x_axis) + 0.01)
 
-            x_plot.set_ylim(min(x_dat), max(x_dat))
-            y_plot.set_ylim(min(y_dat), max(y_dat))
-            z_plot.set_ylim(min(z_dat), max(z_dat))
+            x_plot.set_ylim(min(x_dat) - 0.01*abs(min(x_dat)), max(x_dat) + 0.01*abs(max(x_dat))) #Off sets are just to prevent error of top and bottom boundary being equal
+            y_plot.set_ylim(min(y_dat) - 0.01*abs(min(y_dat)), max(y_dat) + 0.01*abs(max(y_dat)))
+            z_plot.set_ylim(min(z_dat) - 0.01*abs(min(z_dat)), max(z_dat) + 0.01*abs(max(z_dat)))
             new_data = False
         elif SAVE:
             print('saving triggered')
