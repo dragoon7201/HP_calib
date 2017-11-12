@@ -51,9 +51,9 @@ def plot():
             y_plot.set_xlim(min(x_axis) - 0.1, max(x_axis) + 0.1)
             z_plot.set_xlim(min(x_axis) - 0.1, max(x_axis) + 0.1)
 
-            x_plot.set_ylim(min(x_dat) - 0.1, max(x_dat) + 0.1)
-            y_plot.set_ylim(min(y_dat) - 0.1, max(y_dat) + 0.1)
-            z_plot.set_ylim(min(z_dat) - 0.1, max(z_dat) + 0.1)
+            x_plot.set_ylim(min(x_dat), max(x_dat))
+            y_plot.set_ylim(min(y_dat), max(y_dat))
+            z_plot.set_ylim(min(z_dat), max(z_dat))
             new_data = False
         elif SAVE:
             print('saving triggered')
