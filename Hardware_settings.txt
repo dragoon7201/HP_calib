@@ -26,3 +26,5 @@ COM5
 47.8, 47, -42.6
 =@@= PowerSupply to NMR DAC Pairing File =@@=
 Gap_55mm.txt
+=@@= Overheating Factor =@@= (This number indicates poor the chiller is functioning, Higher means worse! Perfect is 0)
+150

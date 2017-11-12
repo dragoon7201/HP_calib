@@ -24,7 +24,7 @@ SCRIPTS = { #Names of the scripts located on Linux Machine 1504-103 /home/magmap
     "Record": "./Read_HP_PV"
 }
 ## Defines the EPICs PV names
-TM_h2o = PV("TM1504-1-06")
+TM_h2o = PV("TM1504-1-02")
 TM_room = PV("TM1504-1-01")
 PS_onoff = PV("PS1504-01:onoff")
 PS_polarity = PV("PS1504-01:polarity")
@@ -41,9 +41,12 @@ HP_probe_tm = PV("HP1504-01:TM:probe")
 ########################################################################################
 
 # Checks water temperature, temperture monitor is probe #6, attached on the water pipes
-def Check_Temp():
-    T = TM_room.get(as_numpy=True)
-    return T
+def Check_Temp(monitor='water'):
+    if monitor == 'water':
+        return TM_h2o.get(as_numpy=True)
+    else:
+        return TM_room.get(as_numpy=True)
+    
 # Using Paramiko addon, we can logon to the linux machien as wiggle user, and put commands related to EPICS PV's
 # Since being on the Windows computer only allows us to READ PV values, and not PUT them. So we have to PUT values through this means
 # All actual commands are done by scripts written on the Linux machine it self. Scripts are located in /home/magmap/HP_calib_scripts

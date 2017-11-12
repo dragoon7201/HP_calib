@@ -26,6 +26,7 @@ NMR_P5 = float(hardware_line[21])
 ZB_ZERO = [float(x) for x in hardware_line[23].split(',')]
 SA_ZERO = [float(x) for x in hardware_line[25].split(',')]
 PS_NMR_PAIR = CUR_DIR + '\\' + hardware_line[27]
+HEAT = int(hardware_line[29]
 
 PS_SEQ = [int(x) for x in run_line[1].split(',')]
 PS_POLAR = run_line[3]
@@ -45,30 +46,11 @@ PS_NMR = {int(x): (int(y), z) for x, y, z in pairing} #creates a dictionary that
 ##############################################################
 
 
-PS_HOT = { ## The HOT threshold varies for different PS dac settings,
-            # as higher dac heats up faster
-            # Obsolete as water chiller is fixed (OBSOLETE SINCE October 2017)
-            # But remain in code just incase
-    18000: 31,
-    30000: 30,
-    45000: 29,
-    60000: 29,
-    70000: 29,
-    80000: 29,
-    100000: 28.5,
-    110000: 28.5,
-    120000: 28,
-    130000: 28,
-    140000: 28,
-    150000: 27.5,
-    160000: 27.5,
-    170000: 27.5,
-    180000: 27.5,
-    200000: 27,
-    220000: 27,
-    240000: 27
-}
-PS_COOL = 27 #Not used, but kepted just incase
+def PS_HOT(dac):
+    # a number to approximate the "quickness" of overheating, higher value is sooner
+    return 30 - (dac * HEAT/10000000)
+
+PS_COOL = 25 #Not used, but kepted just incase
 
 #Global variables used by other modules for keeping track of things
 HP_STRT = 0
@@ -115,4 +97,4 @@ def TAG_Update():
     with open(__file__, 'w') as f:
         for line in content:
             f.write(line)
-
+print(PS_HOT(250000))

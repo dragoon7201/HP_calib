@@ -155,7 +155,7 @@ def Update_System(dac, polarity):
     #for example, running at 45000 DAC, we allow temps to go up till 29°C
     #as that would allow enough time to finish at least one set of measurements
     #while running at 200000 DAC, we should cool down sooner, at 27°
-    # if EPICS.Check_Temp(dac) == "hot":
+    if EPICS.Check_Temp('water') >= "hot":
     #     print("Water temperature too hot, cooling down...")
     #     EPICS.Power_OFF()
     #     while EPICS.Check_Temp(dac) != "cool": # Waits until the water temperature is below predefined values in User_inputs.py module
