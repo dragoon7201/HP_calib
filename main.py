@@ -155,12 +155,12 @@ def Update_System(dac, polarity):
     #for example, running at 45000 DAC, we allow temps to go up till 29°C
     #as that would allow enough time to finish at least one set of measurements
     #while running at 200000 DAC, we should cool down sooner, at 27°
-    # if EPICS.Check_Temp(dac) == "hot":
-    #     print("Water temperature too hot, cooling down...")
-    #     EPICS.Power_OFF()
-    #     while EPICS.Check_Temp(dac) != "cool": # Waits until the water temperature is below predefined values in User_inputs.py module
-    #         time.sleep(300) # check again every 5 mins
-    #         print(time.strftime("%H:%M:%S"))
+    if EPICS.Check_Temp('water') >= User_inputs.PS_HOT(dac):
+        print("Water temperature too hot, cooling down...")
+        EPICS.Power_OFF()
+        while EPICS.Check_Temp('water') >= User_inputs.PS_COOL: # Waits until the water temperature is below predefined values in User_inputs.py module
+            time.sleep(300) # check again every 5 mins
+            print(time.strftime("%H:%M:%S")) # shows it is not frozen
     if User_inputs.IS_ON == False or User_inputs.REQUEST: # Only when the power supply is off, or a new setting is requested, will it call Power_ON function
         Choose_Probe(dac)
         NMR_Remote(dac, polarity)
@@ -237,8 +237,7 @@ def main():
                         Air_Temp = EPICS.Check_Temp()
                         MasterArray.append([dac, pol, ZB_angle, SA_angle, nmr, x, y, z, p, b, Air_Temp])
                 #Checks temperature and determines whether to power down and wait, or continues
-                #Update_System(dac, pol)
-            #NMR_local()
+                Update_System(dac, pol)
         Move_Out()  # This will ensure the devices knows how to enter into another HP start position, eg. X -> Y
     NMR_local()
     EPICS.Power_OFF()
