@@ -26,7 +26,7 @@ NMR_P5 = float(hardware_line[21])
 ZB_ZERO = [float(x) for x in hardware_line[23].split(',')]
 SA_ZERO = [float(x) for x in hardware_line[25].split(',')]
 PS_NMR_PAIR = CUR_DIR + '\\' + hardware_line[27]
-HEAT = int(hardware_line[29]
+HEAT = int(hardware_line[29])
 
 PS_SEQ = [int(x) for x in run_line[1].split(',')]
 PS_POLAR = run_line[3]
