@@ -61,6 +61,7 @@ for PS in PS_seq:
             locked_probe = 'G'
         elif response == "lock":
             dac = Read_DAC()
+            time.sleep(0.5)
             field = NMR_read('x','x',option='return')
             Parings.update({PS: (dac, locked_probe, field)})
             print('PS dac of %d is successfully paired with NMR dac of %d, field is %s T' % (PS, dac, field))
@@ -78,8 +79,8 @@ if len(reply) > 1:
     with open(User_inputs.CUR_DIR + '/' + reply + '.txt', 'a+') as file:
         file.write('PS_DAC\t\tNMR_DAC\t\tNMR_Prb\t\tField[T]\n')
         for key in Parings:
-            file.write('%d\t\t%d\t\t%s\t\t%.4f\n' % (key, Parings[key][0], Parings[key][1], Parings[key][2]))
-print('program finishing...')
+            file.write('%d\t\t%d\t\t%s\t\t%.4f\n' % (key, Parings[key][0], Parings[key][1], Parings[key][2]))v # Note that the writen file is unordered. This is not an error, but just how dictionaries are in Python
+print('program finishing...')                                                                                  
 EPICS.Power_OFF()
 Move_Out()
 NMR.close()

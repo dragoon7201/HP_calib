@@ -103,7 +103,7 @@ def NMR_local():
 #Returns the DAC value of the NMR
 def Read_DAC():
     NMR.write("S4".encode())
-    time.sleep(0.5)
+    time.sleep(1)
     dac = NMR.readline().decode().strip('\r\n')[1:]
     #Returned values are in base 16
     return int(dac, 16)
