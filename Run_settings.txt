@@ -5,7 +5,7 @@
 =@@= Hall Probe Sensors To Scan/Zero =@@= ( eg. X, Y, Z )
 X, Y, Z
 =@@= Result Directory =@@=
-C:\Users\lus\Desktop\HP_Data
+C:\Users\lus\Desktop\TRYME
 =@@= SmarAct Rotation Angles in degrees (Not applied to Zeroing) =@@= ( Min Angle, Max Angle, Step Size )( do not exceed -180° to 180° )(For fixed angle, enter the same angle for min and max. And a large number for step)
 -90, 180, 90
 =@@= Zaber Rotation Angles in degrees (Not apllied to Zeroing) =@@= ( Min Angle, Max Angle, Step Size )( do not exceed -180° to 180° )

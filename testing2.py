@@ -1,11 +1,26 @@
-import RT_plotter
-from threading import Thread
-import numpy as np
-import random
+import User_inputs
+import EPICS
 import time
-from main import Move_One
+import Zaber
+import SmarAct
+import main
+import NMR
+import Temp_monitor
+import subprocess
 
-from epics import PV
+NMR.NMR.open()
+Zaber.ZB.open()
+SmarAct.SA.connect((User_inputs.SA_IP, User_inputs.SA_PORT))
 
-tm = PV("TM1504-1-02")
-print(tm.get())
+main.Move_Two()
+
+subprocess.run(Temp_monitor.Start_Temp_monitor())
+
+for key in User_inputs.PS_NMR:
+    main.Choose_Probe(key)
+    NMR.NMR_Remote(key, 1)
+    EPICS.Power_ON(key, 1)
+    NMR.NMR_Tune(key)
+    time.sleep(2)
+
+    print(key, User_inputs.PS_NMR[key][0])

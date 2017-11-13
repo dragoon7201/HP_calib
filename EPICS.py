@@ -104,7 +104,7 @@ def Rec_HP_OBSOLETE(run_mode, probe, option=''):
     print("Recording Hall Probe measurement values...")
     now = datetime.datetime.now()
     filename = now.strftime("%Y-%m-%d_%Hh%Mm%Ss_SPscan") # Format of files created
-    data_dir = User_inputs.HP_DATA # parent folder for hp sp scan
+    data_dir = User_inputs.DATA_DIR # parent folder for hp sp scan
     if run_mode == "main":  # sub folders
         data_dir += "/Main" + "/" + probe
     elif run_mode == "secondary":
@@ -144,7 +144,7 @@ def Rec_HP(run_mode, probe, option=""):
     print("Recording Hall Probe measurement values...")
     now = datetime.datetime.now()
     filename = now.strftime("%Y-%m-%d_%Hh%Mm%Ss_SPscan")  # Format of files created
-    data_dir = User_inputs.HP_DATA  # parent folder for hp sp scan
+    data_dir = User_inputs.DATA_DIR  # parent folder for hp sp scan
     if run_mode == "main":  # sub folders
         data_dir += "/Main" + "/" + probe
     elif run_mode == "secondary":

@@ -244,7 +244,7 @@ def main():
     Safe_Pos()
     now = datetime.datetime.now()
     filename = now.strftime("/%Y-%m-%d_%Hh%Mm%Ss_HPCal.txt")
-    with open(User_inputs.HP_DATA + filename, 'a+') as file:
+    with open(User_inputs.DATA_DIR + filename, 'a+') as file:
         file.write((
                    "PS_DAC\t\t\tPolarity\t\t\tZB_angle[°]\t\t\tSA_angle[°]\t\t\tNMR_field[T]\t\t\tX_probe[V]\t\t\tY_Probe[V]\t\t\tZ_Probe[V]\t\t\tPrb_Temp[°C]\t\t\tBox_Temp[°C]\t\t\tAir_Temp[°C]"))  # Line is broken as it is too long for python
         for data in MasterArray:

@@ -27,7 +27,7 @@ def NMR_read(run_mode, probe, filename = Default, option = ''):
     if option == 'return':
         return str(decoded_value) # We want to return string, so that when writing to file, we won't have to worry about whether the data is float or "No Lock".
     else:
-        data_dir = User_inputs.HP_DATA # parent folder for hp sp scan
+        data_dir = User_inputs.DATA_DIR # parent folder for hp sp scan
         if run_mode == "main":  # sub folders
             data_dir += "/Main" + "/" + probe
         elif run_mode == "secondary":
@@ -63,10 +63,13 @@ def NMR_Remote(PS_dac, polarity):
     time.sleep(1)
 # Tunes the NMR around predetermined dac settings which is mapped for various power Supply outputs
 # If the pre-set dac is too high or too low, the function will call itself again with +/- offset values
-def NMR_Tune(PS_dac, offset = 0):
-    print("Setting NMR DAC to paired PS DAC...")
+def NMR_Tune(PS_dac, offset = 0, tries = 0):
+    if tries >= User_inputs.NMR_TUNE_Limit:
+        print("PS DAC of %d cannot be successfully locked in after %d tries! Please check the paring file %s to see if the numbers are still right, or check the Teslameter connecting cables." % (PS_dac, tries, User_inputs.PAIR_FILE))
+        return False
     if PS_dac in User_inputs.PS_NMR.keys():
         target = User_inputs.PS_NMR[PS_dac][0] + offset
+        print("Setting NMR DAC to %d for PS DAC of %d" % (target, PS_dac))
         cmd = "C" + str(target) + '\r\n'
         NMR.write(cmd.encode())
         time.sleep(10) #Wait 10 secs for a lock-on
@@ -81,17 +84,17 @@ def NMR_Tune(PS_dac, offset = 0):
             #These are the replies that mean the 'TOO LO' led is lit
             if reply[2] == '9' or reply[2] == 'D' or reply[2] == '1' or reply[2] == '5':
                 print("Dac set point too low")
-                NMR_Tune(PS_dac, offset + 25)
+                NMR_Tune(PS_dac, offset + 25, tries + 1)
             #These are the replies that mean the 'TOO HI' led is lit
             elif reply[2] == 'S' or reply[2] == 'E' or reply[2] == '2' or reply[2] == '6':
                 print("Dac set point too high")
-                NMR_Tune(PS_dac, offset - 25)
+                NMR_Tune(PS_dac, offset - 25, tries + 1)
         else:
             print("No field lock! This may mean the cable connections are loose or that the preset NMR DAC values are wrong! Please verify!")
             return False
     else:
         print("Given dac setting not predefined in dictionary!")
-        print("Please check power supply sequence in user_inputs.txt, or edit the PS_NMR_45 variable in the User_inputs.py module!")
+        print("No NMR to PS DAC pairings found for PS DAC of %d! please check the pairings file %s and try again!" % (PS_dac, User_inputs.PAIR_FILE))
         return False
     return True
 #Returns NMR to manual mode

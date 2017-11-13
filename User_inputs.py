@@ -25,13 +25,15 @@ NMR_P4 = float(hardware_line[19])
 NMR_P5 = float(hardware_line[21])
 ZB_ZERO = [float(x) for x in hardware_line[23].split(',')]
 SA_ZERO = [float(x) for x in hardware_line[25].split(',')]
-PS_NMR_PAIR = CUR_DIR + '\\' + hardware_line[27]
+PAIR_FILE = CUR_DIR + '\\' + hardware_line[27]
 HEAT = int(hardware_line[29])
 
 PS_SEQ = [int(x) for x in run_line[1].split(',')]
 PS_POLAR = run_line[3]
 HP_PROB = run_line[5].upper().replace(' ', '').split(',')
-HP_DATA = run_line[7]
+DATA_DIR = run_line[7]
+if not os.path.exists(DATA_DIR): # Makes the data directory if it is not already there
+    os.makedirs(DATA_DIR)
 
 SA_ANGLES = [float(x) for x in run_line[9].split(',')]
 SA_ANGLES = np.arange(SA_ANGLES[0], SA_ANGLES[1] + 0.01, SA_ANGLES[2]) # adding 0.01 to max angle so that it may include itself in the range
@@ -40,7 +42,7 @@ ZB_ANGLES = np.arange(ZB_ANGLES[0], ZB_ANGLES[1] + 0.01, ZB_ANGLES[2])
 PS_Wait_Time = int(run_line[13])
 ###############################################################
 #Reading power supply to NMR pairing file
-with open(PS_NMR_PAIR, 'r') as source:
+with open(PAIR_FILE, 'r') as source:
     pairing = [x.strip('\n').split('\t\t')[:3] for x in source.readlines()[1:]] #we are just interested in the first 3 columns after row 1
 PS_NMR = {int(x): (int(y), z) for x, y, z in pairing} #creates a dictionary that is used for choosing NMR probe and tuning
 ##############################################################
@@ -57,6 +59,7 @@ HP_STRT = 0
 HP_FLAT = 0
 REQUEST = False
 IS_ON = False
+NMR_TUNE_Limit = 5
 
 #This is a function that finds the variable Curr_TAG in User_inputs.py and adds one to the value for keeping permanent count
 #This way scan files from one single batch can be grouped together independent of date time
@@ -97,4 +100,3 @@ def TAG_Update():
     with open(__file__, 'w') as f:
         for line in content:
             f.write(line)
-print(PS_HOT(250000))
