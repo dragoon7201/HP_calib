@@ -14,7 +14,6 @@ SmarAct.SA.connect((User_inputs.SA_IP, User_inputs.SA_PORT))
 
 main.Move_Two()
 
-#subprocess.run(Temp_monitor.Start_Temp_monitor())
 
 for key in User_inputs.PS_NMR:
     main.Choose_Probe(key)
