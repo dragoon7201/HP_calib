@@ -14,7 +14,7 @@ SmarAct.SA.connect((User_inputs.SA_IP, User_inputs.SA_PORT))
 
 main.Move_Two()
 
-subprocess.run(Temp_monitor.Start_Temp_monitor())
+#subprocess.run(Temp_monitor.Start_Temp_monitor())
 
 for key in User_inputs.PS_NMR:
     main.Choose_Probe(key)
@@ -24,3 +24,8 @@ for key in User_inputs.PS_NMR:
     time.sleep(2)
 
     print(key, User_inputs.PS_NMR[key][0])
+print("done")
+
+NMR.NMR.close()
+Zaber.ZB.close()
+SmarAct.SA.close()
