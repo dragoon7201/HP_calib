@@ -137,23 +137,17 @@ def Rec_HP_OBSOLETE(run_mode, probe, option=''):
         return [x_avg, y_avg, z_avg]
 
 # The alternative HP record function is used if, for some reason, the HP PVs cannot be read. This has occurred once, when the rack computers were swapped for newer ones.
-def Rec_HP(run_mode, probe, option=""):
+def Rec_HP(data_dir, probe, option=""):
     # The difference between Rec_HP() and the OBSOLETE alternative, is that this one does not read the PV's directly. PV access to the IOC has been restricted to the 10.51 VLAN since new PLC
     # Using ssh should be a little slower, but should be no big deal.
     # The data format and file name are organized the same way in both functions.
     print("Recording Hall Probe measurement values...")
-    now = datetime.datetime.now()
-    filename = now.strftime("%Y-%m-%d_%Hh%Mm%Ss_SPscan")  # Format of files created
-    data_dir = User_inputs.DATA_DIR  # parent folder for hp sp scan
-    if run_mode == "main":  # sub folders
-        data_dir += "/Main" + "/" + probe
-    elif run_mode == "secondary":
-        data_dir += "/Secondary" + "/" + probe
-    elif run_mode == "zeroing":
-        data_dir += "/Zeroing" + "/" + probe
-    if not os.path.exists(data_dir):  # Makes a new directory if one does not exist already
-        os.makedirs(data_dir)
+    filename = datetime.datetime.now().strftime("%Y-%m-%d_%Hh%Mm%Ss_SPscan")
+    file_dir = data_dir + probe
+    if not os.path.exists(file_dir):  # Makes a new directory if one does not exist already
+        os.makedirs(file_dir)
     time.sleep(0.1)
+
     ssh.connect(hostname=host, username=usrname, password=password)
     EPIC_send("HP scan")    #Starts a scan
     time.sleep(1)
@@ -167,7 +161,7 @@ def Rec_HP(run_mode, probe, option=""):
     Z_data = parsed_data[2].split(' ')
     Box_T = parsed_data[3].split(' ')
     Prb_T = parsed_data[4].split(' ')
-    with open(data_dir + "/" + filename + ".txt", 'w') as file: #writes data to a txt file
+    with open(file_dir + "\\" + filename + ".txt", 'w') as file: #writes data to a txt file
         file.write("X, Y, Z, Box_T, Probe_T\n")
         for i in range(1, len(X_data)): # we skip point 0 as that is an integer telling us how many data points there are
             file.write(str(X_data[i]) + ', ')

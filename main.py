@@ -5,7 +5,6 @@ from Zaber import ZB_Com, ZB, ZB_waitall
 from SmarAct import SA_Com, SA
 import EPICS #Cyclical referencing, hence 'from xxx import yyy' does not work
 from Compensator import Trig
-#Test GITHUT DESKTOP!!!!
 ## Home all devices, This function assumes that the program closes properly
 ## If Due to whatever reason, the program did not end properly
 ## One should be extra careful and home the device manually
@@ -168,6 +167,16 @@ def Update_System(dac, polarity):
         NMR_Tune(dac) #Tunes the NMR Teslameter for given power supply DAC
 # The main Function that starts by asking user whether devices need to be homed. Then it goes through with calibration, and finally returns to safe position before ending
 def main():
+    #Connects and opens ports to the main devices
+    print("Connecting all ports and setting HP ADC SP scan settings...")
+    print("\n")
+    try:
+        NMR.open()
+        ZB.open()
+        SA.connect((User_inputs.SA_IP, User_inputs.SA_PORT))
+    except:
+        print("failed to connected to SmarAct, Zaber or NMR devices! Please check connections and try again!")
+
     #Shows some User inputs for User to confirm
     print("Please confirm the following user_input parameters:")
     print("Current Run Tag: ", User_inputs.CUR_TAG)
@@ -185,34 +194,39 @@ def main():
     print("Enter anything to continue...")
     input()
     os.system('cls')
-
-    #Connects and opens ports to the main devices
-    print("Connecting all ports and setting HP ADC SP scan settings...")
-    print("\n")
-    try:
-        NMR.open()
-        ZB.open()
-        SA.connect((User_inputs.SA_IP, User_inputs.SA_PORT))
-    except:
-        print("failed to connected to SmarAct, Zaber or NMR devices! Please check connections and try again!")
+    now = datetime.datetime.now().strftime("%H:%M:%S %d/%m/%Y")
+    run_details = ('Run Type: Main\n'
+                   'Start Time: %s\n'
+                   'Power Supply DAC: %s\n'
+                   'Power Supply Polarity: %s\n'
+                   'Hall Probes: %s\n'
+                   'Zaber Angles: %s\n'
+                   'SmarAct Angles: %s\n' % (
+                       now, User_inputs.PS_SEQ, User_inputs.PS_POLAR, ', '.join(User_inputs.HP_PROB),
+                       User_inputs.ZB_ANGLES, User_inputs.SA_ANGLES))
+    data_dir = User_inputs.CREATE_TAG(run_details) #Creates a folder for this run, and returns the address to that folder
 
     #Configures the Hall Probe ADC to 100 data points each an average of 10 readings.
     EPICS.Config_HP()
-
+    #Creates polarity array
+    polarity = Polarity_Order(User_inputs.PS_POLAR)
     print("Would you like to HOME Zaber and SmarAct devices? (y/n)")
     print("Devices need to be HOMED at least ONCE after powered ON")
     if input().lower() == "y":
         print("Homing all devices please wait...")
         time.sleep(1)
         Home_All()
-
-
     print("All Devices ready, make sure Power Supply Breaker is flipped ON")
     print("Enter anything to begin calibrations...")
     input()
     os.system('cls')
-    polarity = Polarity_Order(User_inputs.PS_POLAR)
-    MasterArray = [] #Holds all data
+
+    #Writes the initial line to data file
+    data_file = data_dir + User_inputs.CUR_TAG + 'Summary.txt'
+    with open(data_file, 'a+') as file:
+        file.write(( #Line is too long for python and must be broken
+                   "PS_DAC\t\t\tPolarity\t\t\tZB_angle[°]\t\t\tSA_angle[°]\t\t\tNMR_field[T]\t\t\tX_probe[V]\t\t\t"
+                   "Y_Probe[V]\t\t\tZ_Probe[V]\t\t\tPrb_Temp[°C]\t\t\tBox_Temp[°C]\t\t\tAir_Temp[°C]"))
 
     for pol in polarity:
         for HP in User_inputs.HP_PROB:
@@ -231,28 +245,24 @@ def main():
                 for SA_angle in User_inputs.SA_ANGLES:
                     for ZB_angle in User_inputs.ZB_ANGLES:
                         Move_One(HP, SA_angle, ZB_angle)    #Moves to HP measuring position
-                        [x, y, z, b, p] = EPICS.Rec_HP(run_mode="main", probe=HP, option='return_ave')  #Records HP ADC values for x y z probe, box and probe temperature
+                        [x, y, z, b, p] = EPICS.Rec_HP(data_dir, probe=HP, option='return_ave')  #Records HP ADC values for x y z probe, box and probe temperature
                         Move_Two()  #Moves to measure teslameter
-                        nmr = NMR_read(run_mode="main", probe=HP, option='return')  #Records Teslameter values ************do check if this no lock will work with return
+                        nmr = NMR_read(data_dir, probe=HP, option='return')  #Records Teslameter values
                         Air_Temp = EPICS.Check_Temp()
-                        MasterArray.append([dac, pol, ZB_angle, SA_angle, nmr, x, y, z, p, b, Air_Temp])
+                        with open(data_file, 'a+') as file:
+                            file.write("%d\t\t\t%s\t\t\t%f.2\t\t\t%f.2\t\t\t%s"
+                                       "\t\t\t%f\t\t\t%f\t\t\t%f\t\t\t%f\t\t\t%f\t\t\t%f\n"
+                                       % (dac, pol*2 - 1, ZB_angle, SA_angle, nmr, x, y, z, p, b, Air_Temp))
                 #Checks temperature and determines whether to power down and wait, or continues
                 Update_System(dac, pol)
         Move_Out()  # This will ensure the devices knows how to enter into another HP start position, eg. X -> Y
     NMR_local()
     EPICS.Power_OFF()
     Safe_Pos()
-    now = datetime.datetime.now()
-    filename = now.strftime("/%Y-%m-%d_%Hh%Mm%Ss_HPCal.txt")
-    with open(User_inputs.DATA_DIR + filename, 'a+') as file:
-        file.write((
-                   "PS_DAC\t\t\tPolarity\t\t\tZB_angle[°]\t\t\tSA_angle[°]\t\t\tNMR_field[T]\t\t\tX_probe[V]\t\t\tY_Probe[V]\t\t\tZ_Probe[V]\t\t\tPrb_Temp[°C]\t\t\tBox_Temp[°C]\t\t\tAir_Temp[°C]"))  # Line is broken as it is too long for python
-        for data in MasterArray:
-            file.write(("%d\t\t\t%s\t\t\t%f.2\t\t\t%f.2\t\t\t%s\t\t\t%f\t\t\t%f\t\t\t%f\t\t\t%f\t\t\t%f\t\t\t%f\n" % (
-            data[0], '+' if data[1] == 1 else '-', data[2], data[3], data[4], data[5], data[6], data[7], data[8],
-            data[9], data[10])))
 
     print("Scan program finished!")
+    now = datetime.datetime.now().strftime("%H:%M:%S %d/%m/%Y")
+    User_inputs.CLOSE_TAG(now)
     sys.exit()
 
 if __name__ == "__main__":

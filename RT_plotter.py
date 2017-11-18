@@ -3,7 +3,7 @@ import User_inputs
 new_data = False
 SAVE = False
 RUN = True
-fig_path = User_inputs.DATA_DIR
+fig_path = ''
 fig_name = ''
 x_dat = []
 y_dat = []

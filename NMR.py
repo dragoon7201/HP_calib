@@ -11,7 +11,7 @@ NMR.timeout = 0.5
 
 # Sends Enquiry command, and recieves the NMR readings, then records the value to a file called NMR_readings.txt
 # in the Directory defined by user
-def NMR_read(run_mode, probe, filename = Default, option = ''):
+def NMR_read(data_dir, probe, filename = Default, option = ''):
     if option == '':
         print("Recording NMR measurement values...")
     NMR.write(b'\5')
@@ -24,22 +24,18 @@ def NMR_read(run_mode, probe, filename = Default, option = ''):
         decoded_value = decoded_value[1:len(decoded_value) - 1] # Removes the front 'L' character and '\n\r' at the end
     else:
         decoded_value = "No Lock"
+
+    file_dir = data_dir + probe
+    if not os.path.exists(file_dir):  # Makes a new directory if one does not exist already
+        os.makedirs(file_dir)
+    time.sleep(0.1)
+
+    with open(data_dir + filename, "a+") as NMR_file:
+        NMR_file.write(decoded_value + "\n")
+    time.sleep(1)
+
     if option == 'return':
         return str(decoded_value) # We want to return string, so that when writing to file, we won't have to worry about whether the data is float or "No Lock".
-    else:
-        data_dir = User_inputs.DATA_DIR # parent folder for hp sp scan
-        if run_mode == "main":  # sub folders
-            data_dir += "/Main" + "/" + probe
-        elif run_mode == "secondary":
-            data_dir += "/Secondary" + "/" + probe
-        elif run_mode == "zeroing":
-            data_dir += "/Zeroing" + "/" + probe
-        if not os.path.exists(data_dir): # Makes a new directory if one does not exist already
-            os.makedirs(data_dir)
-
-        with open(data_dir + "/" + filename, "a") as NMR_file:
-            NMR_file.write(decoded_value + "\n")
-        time.sleep(1)
 # Sets up the NMR for remote mode, selects probe number, polarity, depending on Power Supply Dac and polarity.
 # Option codes are found in the PT2025 manual under R232 communications chapter
 def NMR_Remote(PS_dac, polarity):

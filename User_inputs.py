@@ -3,7 +3,7 @@ import numpy as np
 CUR_DIR = os.path.dirname(__file__)
 #The CUR_TAG variable is a permanent counter ranging from 0 - 46655 (base 36)
 #The counter is used to group files that were produced in a single run, and so the counter is incremented each time a main scan or zeroing scan is started.
-CUR_TAG = "000" #Make sure the only double quotation marks on this line are the ones around the 3 character TAG values
+CUR_TAG = "003" #Make sure the only double quotation marks on this line are the ones around the 3 character TAG values
 user_file = CUR_DIR + "\\Run_settings.txt"
 hardware_file = CUR_DIR + "\\Hardware_settings.txt"
 #Reading the user_inputs, both hardware and run
@@ -46,11 +46,6 @@ with open(PAIR_FILE, 'r') as source:
     pairing = [x.strip('\n').split('\t\t')[:3] for x in source.readlines()[1:]] #we are just interested in the first 3 columns after row 1
 PS_NMR = {int(x): (int(y), z) for x, y, z in pairing} #creates a dictionary that is used for choosing NMR probe and tuning
 ##############################################################
-
-
-def PS_HOT(dac):
-    # a number to approximate the "quickness" of overheating, higher value is sooner
-    return 30 - (dac * HEAT/10000000)
 
 PS_COOL = 25 #Not used, but kepted just incase
 
@@ -100,3 +95,25 @@ def TAG_Update():
     with open(__file__, 'w') as f:
         for line in content:
             f.write(line)
+
+def PS_HOT(dac):
+    # a number to approximate the "quickness" of overheating, higher value is sooner
+    return 30 - (dac * HEAT/10000000)
+#Appends to TAG file, and creates TAG directory
+def CREATE_TAG(details):
+    with open(DATA_DIR + '\\RUN_LOG.txt', 'a+') as log:
+        description = input('Please enter a brief description for this run\n')
+        if os.stat(DATA_DIR + '\\RUN_LOG.txt').st_size > 0:
+            newlines = '\n\n'
+        else:
+            newlines = ''
+        log.write('%sTAG%s description: %s\n' % (newlines, CUR_TAG, description))
+        log.write(details)
+    if not os.path.exists(DATA_DIR + '\\' + CUR_TAG):
+        os.makedirs(DATA_DIR + '\\' + CUR_TAG)
+    return DATA_DIR + '\\' + CUR_TAG + '\\'
+
+def CLOSE_TAG(details):
+    with open(DATA_DIR + '\\RUN_LOG.txt', 'a+') as log:
+        log.write('Run complete! %s\n' % details)
+    TAG_Update()

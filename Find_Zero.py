@@ -1,4 +1,4 @@
-import time, User_inputs
+import time, User_inputs, datetime
 from SmarAct import SA
 from Zaber import ZB
 from NMR import NMR, NMR_read, NMR_Remote, NMR_local
@@ -98,6 +98,15 @@ def Zeroing():
     print("Enter anything to begin")
     input()
     os.system('cls')
+    now = datetime.datetime.now().strftime("%H:%M:%S %d/%m/%Y")
+    run_details = ('Run Type: Zeroing\n'
+                   'Start Time: %s\n'
+                   'Power Supply DAC: %s\n'
+                   'Power Supply Polarity: %s\n'
+                   'Hall Probes: %s\n'
+                   'Angle Range: %s\n' % (now, PS, polarity,', '.join(Probes), Angle_range))
+    # Creates a folder for this run, and returns the address to that folder
+    data_dir = User_inputs.CREATE_TAG(run_details)
 
     print('configuring ADC settings...')
     EPICS.Config_HP()
@@ -106,7 +115,7 @@ def Zeroing():
         for HP in Probes:
             main.To_Ready(HP)
             main.Update_System(PS, pol) # powers up power supply and locks in NMR
-            NMR_read(run_mode="zeroing", probe=HP)  # NMR readings are recorded once for each hall probe and polarity.
+            NMR_read(data_dir, probe=HP)  # NMR readings are recorded once for each hall probe and polarity.
             print("Begin zeroing")
             for D in devices:
                 for A in Angle_range:
@@ -114,16 +123,17 @@ def Zeroing():
                     exec("main.Move_One(HP, %s = %f)" % (D + "_angle", A)) # Sets an Angle for either SA or ZB, the other is defaulted to 0°
                     print("angle: %f for device %s" % (A, D))
                     if plot:
-                        x, y, z = EPICS.Rec_HP(run_mode='zeroing', probe=HP, option='return_ave')[:3] #Gets the first 3 return (X, Y, Z averages)
+                        x, y, z = EPICS.Rec_HP(data_dir, probe=HP, option='return_ave')[:3] #Gets the first 3 return (X, Y, Z averages)
                         RT_plotter.x_dat.append(x)
                         RT_plotter.y_dat.append(y)
                         RT_plotter.z_dat.append(z)
                         RT_plotter.x_axis.append(A)
                         RT_plotter.new_data = True #When new data is true, the plotter updates itself
                     else:
-                        EPICS.Rec_HP(run_mode='zeroing', probe=HP)
+                        EPICS.Rec_HP(data_dir, probe=HP)
                 if plot: # This part is to reset the plot after finishing the scans for one device.
-                    RT_plotter.fig_name = D + '_' + HP + ('_pos' if pol > 0 else "_neg") + '.png' #Sets the filename for saving
+                    RT_plotter.fig_name = User_inputs.CUR_TAG + '_' + D + '_' + HP + ('_pos' if pol > 0 else "_neg") + '.png' #Sets the filename for saving
+                    RT_plotter.fig_path = data_dir
                     RT_plotter.SAVE = True  #Turns the saving path to true, the actual saving is done in RT_plotter.py module, save directory is HP_Data
                     time.sleep(2)
                     RT_plotter.x_dat = [] #Clears previous data
@@ -135,8 +145,11 @@ def Zeroing():
             main.Move_Out()
         EPICS.Power_OFF()
     RT_plotter.RUN = False
+    NMR_Remote()
     main.Safe_Pos()
-    print('Program finished')
+    print("Scan program finished!")
+    now = datetime.datetime.now().strftime("%H:%M:%S %d/%m/%Y")
+    User_inputs.CLOSE_TAG(now)
     #After closing the program, an error would occur because one of the modules that RT_plotter uses needs to be in the main thread. But this error should be fine, since it is at the end of the program and all needed data is collected.
 
 if __name__ == "__main__":
