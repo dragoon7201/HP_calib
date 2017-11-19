@@ -58,7 +58,7 @@ def run():
     print("configuring HP ADC")
     EPICS.Config_HP()
     print("Selecting Probe")
-    main.Choose_Probe(DAC)
+    main.Choose_NMR_Probe(DAC)
     time.sleep(1)
 
     for S in SA_ang:

@@ -23,6 +23,9 @@ Y_to_COR = [[3.0],
 Z_to_COR = [[2.0],
             [1.2],
             [-3.0]]
+N_to_COR = [[0],## This is neutral position, basically the center of the hall sensor chip. It only has a y distance from the center of rotation
+            [1.2],
+            [0]]
 # Depending on which device is moved, and the angle to be moved
 # Returns a tuple containing the correction amounts in each axis
 def Trig(probe, SA_angle = 0.0, ZB_angle = 0.0):
@@ -54,9 +57,12 @@ def Trig(probe, SA_angle = 0.0, ZB_angle = 0.0):
     elif probe == "X": # X and Z are calculated the same way, as one is the other rotated 90 degrees
         rot_matrx = numpy.matmul(Rx, Ry)
         offset = numpy.matrix(numpy.matmul(rot_matrx, X_to_COR)).A1
-    else:
+    elif probe == "Z":
         rot_matrx = numpy.matmul(Rx, Ry)
         offset = numpy.matrix(numpy.matmul(rot_matrx, Z_to_COR)).A1
+    else:
+        rot_matrx = numpy.matmul(Rx, Ry)
+        offset = numpy.matrix(numpy.matmul(rot_matrx, N_to_COR)).A1
     #return offset
     return (NMR_to_COR[0] + offset[0], NMR_to_COR[1] + offset[1], NMR_to_COR[2] + offset[2]) # returns the total amount needed for correction
 

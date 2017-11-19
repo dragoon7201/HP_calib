@@ -86,6 +86,15 @@ def To_Ready(Probe):
         ZB_Com("dev_Z", "move abs", User_inputs.Z_CTR)
         SA_Com("move", User_inputs.HP_STRT)
         ZB_waitall()
+    elif Probe == "N":
+        User_inputs.HP_FLAT = User_inputs.ZB_ZERO[3]
+        User_inputs.HP_STRT = User_inputs.SA_ZERO[3]
+        ZB_Com("dev_HP", "move abs", User_inputs.HP_FLAT, option="wait")
+        ZB_Com("dev_X", "move abs", User_inputs.X_CTR)
+        ZB_Com("dev_Y", "move abs", User_inputs.Y_CTR)
+        ZB_Com("dev_Z", "move abs", User_inputs.Z_CTR)
+        SA_Com("move", User_inputs.HP_STRT)
+        ZB_waitall()
     else:
         print("Please double check HP probe entry in user_inputs.txt!")
         print("only 'X' , 'Y' or 'Z' is accepted")
@@ -108,7 +117,7 @@ def Polarity_Order(input):
         input()
         sys.exit()
 ## Picks the appropriate NMR probe to use for a given dac PS output
-def Choose_Probe(dac):
+def Choose_NMR_Probe(dac):
     #User.input.NMR_PX is the absolute angle position of the corresponding probes.
     #So if the probes have be re-arranged, one would need to enter new angles
     NMR_probe = User_inputs.PS_NMR[dac][1]
@@ -161,7 +170,7 @@ def Update_System(dac, polarity):
             time.sleep(300) # check again every 5 mins
             print(time.strftime("%H:%M:%S")) # shows it is not frozen
     if User_inputs.IS_ON == False or User_inputs.REQUEST: # Only when the power supply is off, or a new setting is requested, will it call Power_ON function
-        Choose_Probe(dac)
+        Choose_NMR_Probe(dac)
         NMR_Remote(dac, polarity)
         EPICS.Power_ON(dac, polarity)   # Power_ON() will update to the new dac value if PS is already running. It will reset first if a change in polarity is ordered
         NMR_Tune(dac) #Tunes the NMR Teslameter for given power supply DAC

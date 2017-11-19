@@ -20,10 +20,10 @@ COM5
 175
 =@@= NMR Teslameter Probe 5 in degrees =@@= ( ZB device 5 )
 55
-=@@= Zaber Zero Angle for X, Y, Z probe in degrees =@@= ( ZB device 4 ) (such that HP chip surface faces directly up )
-0.5, -88.6, 1.4
-=@@= SmarAct Zero Angle for X, Y, Z probe in degrees =@@= ( SA device ) (such that HP x probe is parallel with dipole surfaces )
-47.8, 47.8, -44.4
+=@@= Zaber Zero Angle for X, Y, Z and Neutral probe in degrees =@@= ( ZB device 4 ) (such that HP chip surface faces directly up )
+0.5, -88.6, 1.4, 1.0
+=@@= SmarAct Zero Angle for X, Y, Z and Neutral probe in degrees =@@= ( SA device ) (such that HP x probe is parallel with dipole surfaces )
+47.8, 47.8, -44.4, 47.8
 =@@= PowerSupply to NMR DAC Pairing File =@@=
 Gap_50mm.txt
 =@@= Overheating Factor =@@= (This number indicates poor the chiller is functioning, Higher means worse! Perfect is 0)
