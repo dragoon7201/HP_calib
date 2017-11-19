@@ -24,7 +24,7 @@ SCRIPTS = { #Names of the scripts located on Linux Machine 1504-103 /home/magmap
     "Record": "./Read_HP_PV"
 }
 ## Defines the EPICs PV names
-TM_h2o = PV("TM1504-1-02")
+TM_h2o = PV("TM1504-1-06")
 TM_room = PV("TM1504-1-01")
 PS_onoff = PV("PS1504-01:onoff")
 PS_polarity = PV("PS1504-01:polarity")

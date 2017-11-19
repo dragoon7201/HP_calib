@@ -3,7 +3,7 @@ import numpy as np
 CUR_DIR = os.path.dirname(__file__)
 #The CUR_TAG variable is a permanent counter ranging from 0 - 46655 (base 36)
 #The counter is used to group files that were produced in a single run, and so the counter is incremented each time a main scan or zeroing scan is started.
-CUR_TAG = "000" #Make sure the only double quotation marks on this line are the ones around the 3 character TAG values
+CUR_TAG = "002" #Make sure the only double quotation marks on this line are the ones around the 3 character TAG values
 user_file = CUR_DIR + "\\Run_settings.txt"
 hardware_file = CUR_DIR + "\\Hardware_settings.txt"
 #Reading the user_inputs, both hardware and run
@@ -47,14 +47,14 @@ with open(PAIR_FILE, 'r') as source:
 PS_NMR = {int(x): (int(y), z) for x, y, z in pairing} #creates a dictionary that is used for choosing NMR probe and tuning
 ##############################################################
 
-PS_COOL = 25 #Not used, but kepted just incase
+PS_COOL = 26 #Not used, but kepted just incase
 
 #Global variables used by other modules for keeping track of things
 HP_STRT = 0
 HP_FLAT = 0
 REQUEST = False
 IS_ON = False
-NMR_TUNE_Limit = 5
+NMR_TUNE_Limit = 7
 
 #This is a function that finds the variable Curr_TAG in User_inputs.py and adds one to the value for keeping permanent count
 #This way scan files from one single batch can be grouped together independent of date time

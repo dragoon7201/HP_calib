@@ -225,25 +225,25 @@ def main():
     data_file = data_dir + User_inputs.CUR_TAG + 'Summary.txt'
     with open(data_file, 'a+') as file:
         file.write(( #Line is too long for python and must be broken
-                   "PS_DAC\t\t\t\tPolarity\t\t\t\tPROBE\t\t\t\tZB_angle[°]\t\t\t\tSA_angle[°]\t\t\t\t"
-                   "NMR_field[T]\t\t\t\tX_probe[V]\t\t\t\tY_Probe[V]\t\t\t\tZ_Probe[V]\t\t\t\t"
-                   "Prb_Temp[°C]\t\t\t\tBox_Temp[°C]\t\t\t\tAir_Temp[°C]\n"))
+                   "PS_DAC\tPolarity\tPROBE\tZB_angle[°]\tSA_angle[°]\t"
+                   "NMR_field[T]\tX_probe[V]\tY_Probe[V]\tZ_Probe[V]\t"
+                   "Prb_Temp[°C]\tBox_Temp[°C]\tAir_Temp[°C]\n"))
 
     for pol in polarity:
-        for HP in User_inputs.HP_PROB:
-            print("Moving to start position for %s probe" % HP)
-            To_Ready(HP)
-            for dac in User_inputs.PS_SEQ:
+        for dac in User_inputs.PS_SEQ:
+            ## REQUEST flag is set true so that Check_Status() will run Power_ON() again even if the power supply is already running
+            # This is helpful when we have multiple power supply DAC settings
+            User_inputs.REQUEST = True
+            for HP in User_inputs.HP_PROB:
+                print("Moving to start position for %s probe" % HP)
+                To_Ready(HP)
                 print("Selecting NMR Probe and Configuring Teslameter for Remote Mode...")
-                ## REQUEST flag is set true so that Check_Status() will run Power_ON() again even if the power supply is already running
-                # This is helpful when we have multiple power supply DAC settings
-                User_inputs.REQUEST = True
-                print("Configuring Power Supply dac and polarity...")
-                ## REQUEST true means that a new polarity or dac setting is requested
-                Update_System(dac, pol)  #Updates PS and NMR to the new dac. Changes NMR probe if necessary
-                User_inputs.REQUEST = False  ## REQUEST variable may be outdated, since we no longer need to check temperatures after chiller fix
                 #Goes through the given rotation angles
                 for SA_angle in User_inputs.SA_ANGLES:
+                    print("Configuring Power Supply dac and polarity...")
+                    ## REQUEST true means that a new polarity or dac setting is requested
+                    Update_System(dac, pol)  # Updates PS and NMR to the new dac. Changes NMR probe if necessary
+                    User_inputs.REQUEST = False  ## REQUEST variable may be outdated, since we no longer need to check temperatures after chiller fix
                     for ZB_angle in User_inputs.ZB_ANGLES:
                         Move_One(HP, SA_angle, ZB_angle)    #Moves to HP measuring position
                         [x, y, z, b, p] = EPICS.Rec_HP(data_dir, probe=HP, option='return_ave')  #Records HP ADC values for x y z probe, box and probe temperature
@@ -251,12 +251,10 @@ def main():
                         nmr = NMR_read(data_dir, probe=HP, option='return')  #Records Teslameter values
                         Air_Temp = EPICS.Check_Temp()
                         with open(data_file, 'a+') as file:
-                            file.write("%d\t\t\t\t%s\t\t\t\t%s\t\t\t\t%f.2\t\t\t\t%f.2\t\t\t\t%s"
-                                       "\t\t\t\t%f\t\t\t\t%f\t\t\t\t%f\t\t\t\t%f\t\t\t\t%f\t\t\t\t%f\n"
+                            file.write("%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n"
                                        % (dac, pol*2 - 1, HP, ZB_angle, SA_angle, nmr, x, y, z, p, b, Air_Temp))
                 #Checks temperature and determines whether to power down and wait, or continues
-                Update_System(dac, pol)
-        Move_Out()  # This will ensure the devices knows how to enter into another HP start position, eg. X -> Y
+                Move_Out()  # This will ensure the devices knows how to enter into another HP start position, eg. X -> Y
     NMR_local()
     EPICS.Power_OFF()
     Safe_Pos()
