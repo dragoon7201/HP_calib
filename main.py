@@ -225,8 +225,9 @@ def main():
     data_file = data_dir + User_inputs.CUR_TAG + 'Summary.txt'
     with open(data_file, 'a+') as file:
         file.write(( #Line is too long for python and must be broken
-                   "PS_DAC\t\t\tPolarity\t\t\tZB_angle[°]\t\t\tSA_angle[°]\t\t\tNMR_field[T]\t\t\tX_probe[V]\t\t\t"
-                   "Y_Probe[V]\t\t\tZ_Probe[V]\t\t\tPrb_Temp[°C]\t\t\tBox_Temp[°C]\t\t\tAir_Temp[°C]"))
+                   "PS_DAC\t\t\t\tPolarity\t\t\t\tPROBE\t\t\t\tZB_angle[°]\t\t\t\tSA_angle[°]\t\t\t\t"
+                   "NMR_field[T]\t\t\t\tX_probe[V]\t\t\t\tY_Probe[V]\t\t\t\tZ_Probe[V]\t\t\t\t"
+                   "Prb_Temp[°C]\t\t\t\tBox_Temp[°C]\t\t\t\tAir_Temp[°C]\n"))
 
     for pol in polarity:
         for HP in User_inputs.HP_PROB:
@@ -250,9 +251,9 @@ def main():
                         nmr = NMR_read(data_dir, probe=HP, option='return')  #Records Teslameter values
                         Air_Temp = EPICS.Check_Temp()
                         with open(data_file, 'a+') as file:
-                            file.write("%d\t\t\t%s\t\t\t%f.2\t\t\t%f.2\t\t\t%s"
-                                       "\t\t\t%f\t\t\t%f\t\t\t%f\t\t\t%f\t\t\t%f\t\t\t%f\n"
-                                       % (dac, pol*2 - 1, ZB_angle, SA_angle, nmr, x, y, z, p, b, Air_Temp))
+                            file.write("%d\t\t\t\t%s\t\t\t\t%s\t\t\t\t%f.2\t\t\t\t%f.2\t\t\t\t%s"
+                                       "\t\t\t\t%f\t\t\t\t%f\t\t\t\t%f\t\t\t\t%f\t\t\t\t%f\t\t\t\t%f\n"
+                                       % (dac, pol*2 - 1, HP, ZB_angle, SA_angle, nmr, x, y, z, p, b, Air_Temp))
                 #Checks temperature and determines whether to power down and wait, or continues
                 Update_System(dac, pol)
         Move_Out()  # This will ensure the devices knows how to enter into another HP start position, eg. X -> Y

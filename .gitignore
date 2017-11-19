@@ -6,3 +6,4 @@
 *.pyc
 *.pyc
 .idea/HP_calib.iml
+.idea/epics_online.iml

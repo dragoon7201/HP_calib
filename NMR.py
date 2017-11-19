@@ -85,6 +85,9 @@ def NMR_Tune(PS_dac, offset = 0, tries = 0):
             elif reply[2] == 'S' or reply[2] == 'E' or reply[2] == '2' or reply[2] == '6':
                 print("Dac set point too high")
                 NMR_Tune(PS_dac, offset - 25, tries + 1)
+            else:
+                User_inputs.PS_NMR[PS_dac][0] = target
+                return
         else:
             print("No field lock! This may mean the cable connections are loose or that the preset NMR DAC values are wrong! Please verify!")
             return False

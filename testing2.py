@@ -1,30 +1,9 @@
-import User_inputs
-import EPICS
-import time
-import Zaber
-import SmarAct
-import main
-import NMR
-import Temp_monitor
-import subprocess
+import smtplib
+"""this is some test documentation in the function"""
 
-NMR.NMR.open()
-Zaber.ZB.open()
-SmarAct.SA.connect((User_inputs.SA_IP, User_inputs.SA_PORT))
-
-main.Move_Two()
-
-
-for key in User_inputs.PS_NMR:
-    main.Choose_Probe(key)
-    NMR.NMR_Remote(key, 1)
-    EPICS.Power_ON(key, 1)
-    NMR.NMR_Tune(key)
-    time.sleep(2)
-
-    print(key, User_inputs.PS_NMR[key][0])
-print("done")
-
-NMR.NMR.close()
-Zaber.ZB.close()
-SmarAct.SA.close()
+# Send the mail
+server = smtplib.SMTP('vsrv-mail-01.clsi.ca')
+server.starttls()
+server.login('lus', '1q2aw3zse4')
+server.sendmail('sunny.lu@lightsource.ca', 'sunny.lu.sl@gmail.com', '')
+server.quit()
