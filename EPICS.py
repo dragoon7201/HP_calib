@@ -15,10 +15,10 @@ password = "w1gg13"
 SCRIPTS = { #Names of the scripts located on Linux Machine 1504-103 /home/magmap/HP_calib_scripts
             # NOTE caget and caput commands in the scripts are full paths. Due to paramiko not sharing the same $PATH
             # we cannot call caget and caput directly.
-    "change polarity": "./Change_Polarity",
+    "set polarity": "./Set_Polarity ",
     "power on": "./Power_On",
     "set dac": "./Set_Dac ",
-    "reset": "./Reset",
+    "reset": "./PS_Reset",
     "HP config": "./HP_ADC_config",
     "HP scan": "./HP_SP_Scan",
     "Record": "./Read_HP_PV"
@@ -52,7 +52,7 @@ def Check_Temp(monitor='water'):
 # All actual commands are done by scripts written on the Linux machine it self. Scripts are located in /home/magmap/HP_calib_scripts
 def EPIC_send(cmd, amount=''):
     pre_cmd = "cd ~/HP_calib_scripts; "
-    if cmd == "set dac":
+    if cmd == "set dac" or cmd == "set polarity":
         send = pre_cmd + SCRIPTS[cmd] + str(amount)
     else:
         send = pre_cmd + SCRIPTS[cmd]
@@ -78,8 +78,7 @@ def Power_ON(dac, polarity):
     ssh.connect(hostname=host, username=usrname, password=password)
     if current_pol != polarity:
         EPIC_send("reset")
-
-        EPIC_send("change polarity")
+        EPIC_send("set polarity", amount=polarity)
 
     EPIC_send("set dac", amount=dac)
     EPIC_send("power on") # Script will ignore this command if it is already powered on

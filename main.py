@@ -271,7 +271,8 @@ def main():
     print("Scan program finished!")
     now = datetime.datetime.now().strftime("%H:%M:%S %d/%m/%Y")
     User_inputs.CLOSE_TAG(now)
-    sys.exit()
 
 if __name__ == "__main__":
     main()
+    input("Enter Anything to close console")
+    sys.exit()

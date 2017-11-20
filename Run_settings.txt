@@ -1,13 +1,13 @@
 =@@= Power Supply DAC Setting =@@= ( Seperate multiple values by commas )
 230000
 =@@= Power Supply Polarity =@@= ( +, - or # for Both )
-#
+-
 =@@= Hall Probe Sensors To Scan/Zero =@@= ( eg. X, Y, Z or N for neutral) #Neutral is experimental
 N
 =@@= Result Directory =@@=
 C:\Users\lus\Desktop\HP_Data
 =@@= SmarAct Rotation Angles in degrees (Not applied to Zeroing) =@@= ( Min Angle, Max Angle, Step Size )( do not exceed -180° to 180° )(For fixed angle, enter the same angle for min and max. And a large number for step)
--90,180,90
+90,180,90
 =@@= Zaber Rotation Angles in degrees (Not apllied to Zeroing) =@@= ( Min Angle, Max Angle, Step Size )( do not exceed -180° to 180° )
 -180,175,5
 =@@= Power Supply Stabilizing time =@@= ( seconds )
