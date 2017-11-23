@@ -134,6 +134,7 @@ def Choose_NMR_Probe(dac):
 # The idea is to get the hall sensor and NMR probe to measure at the same spatial position
 # Thus eliminating any discrepancy in field uniformity across the dipole
 def Move_One(probe, SA_angle=0.0, ZB_angle=0.0):
+    print("moving to SA %.1f and ZB %.1f" % (SA_angle, ZB_angle))
     compensation = Trig(probe, SA_angle, ZB_angle) # Returns the amount to compensate after being rotated
     comp_x = User_inputs.X_CTR - compensation[0]
     comp_y = User_inputs.Y_CTR - compensation[1]
@@ -149,8 +150,8 @@ def Move_One(probe, SA_angle=0.0, ZB_angle=0.0):
     time.sleep(2) #Delay for vibration dampening
 # Moves the NMR probe into measurement position
 def Move_Two():
-    SA_Com("move", User_inputs.HP_STRT)
-    ZB_Com("dev_HP", "move abs", User_inputs.HP_FLAT, option="wait")
+    #SA_Com("move", User_inputs.HP_STRT)
+    #ZB_Com("dev_HP", "move abs", User_inputs.HP_FLAT, option="wait")
     ZB_Com("dev_X", "move abs", User_inputs.X_CTR)
     ZB_Com("dev_Y", "move abs", User_inputs.Y_CTR)
     ZB_Com("dev_Z", "move abs", User_inputs.Z_CTR)
@@ -231,7 +232,7 @@ def main():
     os.system('cls')
 
     #Writes the initial line to data file
-    data_file = data_dir + User_inputs.CUR_TAG + 'Summary.txt'
+    data_file = data_dir + User_inputs.CUR_TAG + '_Summary.txt'
     with open(data_file, 'a+') as file:
         file.write(( #Line is too long for python and must be broken
                    "PS_DAC\tPolarity\tPROBE\tZB_angle[°]\tSA_angle[°]\t"
@@ -248,12 +249,22 @@ def main():
                 To_Ready(HP)
                 print("Selecting NMR Probe and Configuring Teslameter for Remote Mode...")
                 #Goes through the given rotation angles
-                for SA_angle in User_inputs.SA_ANGLES:
+                tally = 0
+                if tally % 2 == 0:
+                    SA_loop = User_inputs.SA_ANGLES
+                else:
+                    SA_loop = reversed(User_inputs.SA_ANGLES)
+                for SA_angle in SA_loop:
                     print("Configuring Power Supply dac and polarity...")
                     ## REQUEST true means that a new polarity or dac setting is requested
                     Update_System(dac, pol)  # Updates PS and NMR to the new dac. Changes NMR probe if necessary
                     User_inputs.REQUEST = False  ## REQUEST variable may be outdated, since we no longer need to check temperatures after chiller fix
-                    for ZB_angle in User_inputs.ZB_ANGLES:
+                    tally += 1
+                    if tally % 2 != 0:
+                        ZB_loop = User_inputs.ZB_ANGLES
+                    else:
+                        ZB_loop = reversed(User_inputs.ZB_ANGLES)
+                    for ZB_angle in ZB_loop:
                         Move_One(HP, SA_angle, ZB_angle)    #Moves to HP measuring position
                         [x, y, z, b, p] = EPICS.Rec_HP(data_dir, probe=HP, option='return_ave')  #Records HP ADC values for x y z probe, box and probe temperature
                         Move_Two()  #Moves to measure teslameter

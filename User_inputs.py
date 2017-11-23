@@ -3,7 +3,7 @@ import numpy as np
 CUR_DIR = os.path.dirname(__file__)
 #The CUR_TAG variable is a permanent counter ranging from 0 - 46655 (base 36)
 #The counter is used to group files that were produced in a single run, and so the counter is incremented each time a main scan or zeroing scan is started.
-CUR_TAG = "004" #Make sure the only double quotation marks on this line are the ones around the 3 character TAG values
+CUR_TAG = "006" #Make sure the only double quotation marks on this line are the ones around the 3 character TAG values
 user_file = CUR_DIR + "\\Run_settings.txt"
 hardware_file = CUR_DIR + "\\Hardware_settings.txt"
 #Reading the user_inputs, both hardware and run
@@ -36,9 +36,9 @@ if not os.path.exists(DATA_DIR): # Makes the data directory if it is not already
     os.makedirs(DATA_DIR)
 
 SA_ANGLES = [float(x) for x in run_line[9].split(',')]
-SA_ANGLES = np.arange(SA_ANGLES[0], SA_ANGLES[1] + 0.01, SA_ANGLES[2]) # adding 0.01 to max angle so that it may include itself in the range
+SA_ANGLES = np.around(np.arange(SA_ANGLES[0], SA_ANGLES[1] + 0.01, SA_ANGLES[2]), 2).tolist() # adding 0.01 to max angle so that it may include itself in the range
 ZB_ANGLES = [float(x) for x in run_line[11].split(',')]
-ZB_ANGLES = np.arange(ZB_ANGLES[0], ZB_ANGLES[1] + 0.01, ZB_ANGLES[2])
+ZB_ANGLES = np.around(np.arange(ZB_ANGLES[0], ZB_ANGLES[1] + 0.01, ZB_ANGLES[2]), 2).tolist()
 PS_Wait_Time = int(run_line[13])
 ###############################################################
 #Reading power supply to NMR pairing file
@@ -117,12 +117,8 @@ def CLOSE_TAG(details):
     with open(DATA_DIR + '\\RUN_LOG.txt', 'a+') as log:
         log.write('Run complete! %s\n' % details)
 
-    import smtplib
-    """this is some test documentation in the function"""
-    # Send the mail
-    server = smtplib.SMTP('vsrv-mail-01.clsi.ca')
-    server.starttls()
-    server.login('lus', '1q2aw3zse4')
-    server.sendmail('sunny.lu@lightsource.ca', 'sunny.lu.sl@gmail.com', details)
-    server.quit()
+    import Email
+    files = [DATA_DIR + '\\RUN_LOG.txt',
+             DATA_DIR + '\\' + CUR_TAG + '\\' + CUR_TAG + '_Summary.txt']
+    Email.send_mail('sunny.lu@lightsource.ca', 'sunny.lu.sl@gmail.com', 'attch1', 'hello!', files)
     TAG_Update()
